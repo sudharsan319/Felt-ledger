@@ -1,0 +1,19 @@
+.top-actions{display:flex;align-items:center;gap:8px}
+.rate-summary{margin-top:10px}
+.rate-summary span:last-child{color:#d5dfd2;font:11px "DM Mono",monospace}
+.leaderboard{margin-top:25px;padding:20px 22px 0;background:#151c17;border:1px solid #2c372f;border-radius:12px}
+.leaderboard-head{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:14px}
+.leaderboard-head .eyebrow{margin-bottom:5px}
+.leaderboard-head h2{font-size:19px;letter-spacing:-.5px;margin:0}
+.leaderboard-note{font:9px "DM Mono",monospace;color:#879386;letter-spacing:.5px}
+.leaderboard-rows{border-top:1px solid #2b352e}
+.leader-row{display:grid;grid-template-columns:34px 32px 1fr auto;align-items:center;gap:11px;min-height:57px;border-bottom:1px solid #273129}
+.leader-row:last-child{border-bottom:0}
+.leader-rank{font:11px "DM Mono",monospace;color:#819082;text-align:center}
+.leader-rank.first{color:#d7ed8a;font-size:17px}
+.leader-avatar{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#2b3c2d;color:#daf0be;font-size:10px;font-weight:700}
+.leader-name{font-size:12px;font-weight:600;color:#e4e9e0}
+.leader-score{text-align:right;font:12px "DM Mono",monospace}
+.leader-score small{display:block;margin-top:3px;color:#859184;font:9px "DM Sans",sans-serif}
+.leaderboard-empty{margin:0;padding:17px 0;color:#8d988d;font-size:11px}
+@media(max-width:700px){.top-actions{gap:5px}.top-actions .reset-button{padding:8px;font-size:10px}.leaderboard{margin-top:17px;padding:17px 15px 0}.leader-row{grid-template-columns:27px 29px 1fr auto;gap:8px}}

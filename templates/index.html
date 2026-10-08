@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101714" />
+  <title>Felt — Poker night, settled</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/styles.css" />
+  <link rel="stylesheet" href="static/css/chips.css" />
+  <link rel="stylesheet" href="static/css/leaderboard.css" />
+  <link rel="stylesheet" href="static/css/tools.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Felt home"><span class="brand-mark">♠</span> felt<span class="brand-dot">.</span></a>
+      <div class="table-status"><span class="live-dot"></span><span id="statusText">SESSION IN PROGRESS</span></div>
+      <div class="top-actions"><button class="reset-button" id="openHistory" type="button">Past games</button><button class="reset-button" id="exportSession" type="button">Export</button><button class="reset-button" id="openSettings" type="button">⚙ Settings</button><button class="reset-button" id="newSession" type="button">＋ New session</button></div>
+    </header>
+
+    <section class="intro">
+      <div>
+        <p class="eyebrow">THE HOME GAME LEDGER</p>
+        <h1>Keep the game<br /><em>in good hands.</em></h1>
+        <p class="intro-copy">Track every buy-in and cash-out. The math takes care of itself.</p>
+      </div>
+      <div class="session-card">
+        <label for="sessionName">TONIGHT'S TABLE</label>
+        <input id="sessionName" value="Friday night game" maxlength="42" aria-label="Session name" />
+        <div class="session-meta"><span>♧ &nbsp;Friendly game</span><span id="sessionDate"></span></div>
+        <div class="session-meta rate-summary"><span>CHIP VALUE</span><span id="rateSummary">₹20 = 1,000 chips</span></div>
+      </div>
+    </section>
+
+    <section class="summary" aria-label="Session totals">
+      <article class="summary-card"><span class="summary-label">PLAYERS AT THE TABLE</span><strong id="playerCount">0</strong><span class="summary-hint">ready to play</span></article>
+      <article class="summary-card"><span class="summary-label">TOTAL BUY-INS</span><strong id="totalBuyins">0</strong><span class="summary-hint" id="buyinValue">chips in play</span></article>
+      <article class="summary-card"><span class="summary-label">TOTAL CASHED OUT</span><strong id="totalCashouts">0</strong><span class="summary-hint" id="cashoutValue">paid to players</span></article>
+      <article class="summary-card balance-card"><span class="summary-label">CHIPS LEFT ON TABLE</span><strong id="tableBalance">0</strong><span class="summary-hint" id="balanceHint">buy-ins minus cash-outs</span></article>
+    </section>
+
+    <section class="leaderboard" aria-labelledby="leaderboardTitle">
+      <div class="leaderboard-head"><div><p class="eyebrow">THE STANDINGS</p><h2 id="leaderboardTitle">Leaderboard</h2></div><span class="leaderboard-note">Ranked by net chips</span></div>
+      <div id="leaderboardRows" class="leaderboard-rows"></div>
+    </section>
+
+    <section class="ledger" aria-labelledby="ledgerTitle">
+      <div class="ledger-head">
+        <div><p class="eyebrow">THE LEDGER</p><h2 id="ledgerTitle">Players <span id="rowCount">(0)</span></h2></div>
+        <div class="ledger-actions"><button class="reset-button" id="shareSession" type="button">Share</button><button class="reset-button" id="settleButton" type="button">Settle up</button><button class="add-player" id="openAdd" type="button"><span>＋</span> Add player</button></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>PLAYER</th><th>BUY-INS</th><th>CASHED OUT</th><th>NET</th><th>STATUS</th><th><span class="sr-only">Actions</span></th></tr></thead>
+          <tbody id="playerRows"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState"><div class="empty-chips">♠ &nbsp;● &nbsp;♣</div><strong>Waiting for the first player</strong><p>Add someone to the table to start the ledger.</p><button class="add-player" id="emptyAdd" type="button">＋ Add first player</button></div>
+      </div>
+      <div class="ledger-foot"><span><span class="live-dot"></span> Saved on this device</span><span>Amounts are in chips · converted at the rate above</span></div>
+    </section>
+    <section class="settlement" id="settlement" hidden aria-live="polite"></section>
+    <footer><span>♠ &nbsp;A little less counting. A little more playing.</span><span>FELT SESSION LEDGER</span></footer>
+  </main>
+
+  <dialog id="playerDialog">
+    <form id="playerForm" method="dialog">
+      <div class="dialog-top"><div><p class="eyebrow">AT THE TABLE</p><h2 id="dialogTitle">Add a player</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div>
+      <label class="field-label" for="playerName">PLAYER NAME</label>
+      <input class="text-input" id="playerName" name="name" placeholder="e.g. Alex" maxlength="32" autocomplete="off" required />
+      <label class="field-label" for="startAmount">STARTING BUY-IN <span>(chips, optional)</span></label>
+      <div class="amount-input"><span>●</span><input id="startAmount" inputmode="numeric" type="number" min="0" step="1" placeholder="0" /></div>
+      <p class="field-help">Default stack from Settings: <span id="startingStackHelp"></span></p>
+      <div class="dialog-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="confirm-button" id="savePlayer" value="default">Add player</button></div>
+    </form>
+  </dialog>
+  <dialog id="settingsDialog">
+    <form id="settingsForm" method="dialog">
+      <div class="dialog-top"><div><p class="eyebrow">SESSION SETTINGS</p><h2>Chip value</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div>
+      <p class="settings-copy">Set how much cash is exchanged for chips. This rate applies to the current session and updates all displayed cash equivalents.</p>
+      <label class="field-label" for="cashRate">CASH GIVEN</label>
+      <div class="amount-input"><span>₹</span><input id="cashRate" type="number" min="0.01" step="0.01" value="20" required /></div>
+      <label class="field-label" for="chipRate">CHIPS RECEIVED</label>
+      <div class="amount-input"><span>●</span><input id="chipRate" inputmode="numeric" type="number" min="1" step="1" value="1000" required /></div>
+      <label class="field-label" for="startingStack">STARTING STACK <span>(chips; 0 disables default)</span></label>
+      <div class="amount-input"><span>●</span><input id="startingStack" inputmode="numeric" type="number" min="0" step="1" value="1000" required /></div>
+      <label class="field-label" for="rebuyLimit">REBUY LIMIT <span>(0 means unlimited)</span></label>
+      <div class="amount-input"><span>↻</span><input id="rebuyLimit" inputmode="numeric" type="number" min="0" step="1" value="0" required /></div>
+      <label class="field-label" for="denominations">CHIP DENOMINATIONS <span>(comma-separated chip values)</span></label>
+      <input class="text-input" id="denominations" type="text" placeholder="1, 5, 25, 100" />
+      <div class="settings-example" id="rateExample">₹20 buys 1,000 chips</div>
+      <div class="dialog-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="confirm-button" id="saveSettings" value="default">Save settings</button></div>
+    </form>
+  </dialog>
+  <dialog id="entriesDialog"><div class="generic-dialog"><div class="dialog-top"><div><p class="eyebrow">PLAYER RECORD</p><h2 id="entriesTitle">Entries</h2></div><button class="icon-button" data-close="entriesDialog" aria-label="Close">×</button></div><div id="entriesList" class="entries-list"></div></div></dialog>
+  <dialog id="historyDialog"><div class="generic-dialog"><div class="dialog-top"><div><p class="eyebrow">SAVED LOCALLY</p><h2>Past games</h2></div><button class="icon-button" data-close="historyDialog" aria-label="Close">×</button></div><div id="historyList" class="history-list"></div></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="static/js/app.js"></script>
+</body>
+</html>

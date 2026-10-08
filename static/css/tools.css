@@ -1,0 +1,18 @@
+.ledger-actions{display:flex;align-items:center;gap:7px}
+.settlement{margin-top:14px;padding:20px 22px;background:#1a241d;border:1px solid #50633b;border-radius:11px}
+.settle-head{display:flex;align-items:center;justify-content:space-between}.settle-head .eyebrow{margin-bottom:5px}.settle-head h2{margin:0;font-size:19px}
+.transfer-list{margin-top:12px;border-top:1px solid #344135}
+.transfer-row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 2px;border-bottom:1px solid #303b33;font-size:12px}
+.transfer-row>span:last-child{text-align:right;font:12px "DM Mono",monospace;color:var(--accent)}
+.transfer-row small{display:block;margin-top:3px;color:#89958a;font:9px "DM Sans",sans-serif}
+.settle-foot,.settle-warning{margin:12px 0 0;color:#9aa797;font-size:11px;line-height:1.5}.settle-warning strong{color:#f3c985}
+.generic-dialog{padding:24px;max-height:min(78vh,700px);overflow:auto}
+.settings-copy{margin:-10px 0 17px;color:#97a397;font-size:12px;line-height:1.5}
+.settings-example{margin-top:12px;padding:10px 12px;border-radius:6px;background:#202b22;color:var(--accent);font:11px "DM Mono",monospace}
+.field-help{margin:7px 0 0;color:#829082;font-size:10px}.field-help span{color:#c6ef9a}
+.entry-row,.history-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #303b33}
+.entry-row>div:first-child,.history-row>div:first-child{display:flex;flex-direction:column;gap:4px}.entry-row>div:first-child strong,.history-row>div:first-child strong{font-size:12px}.entry-row>div:first-child span,.history-row>div:first-child span{color:#879386;font-size:10px}
+.entry-row>strong{font:11px "DM Mono",monospace;text-align:right}.entry-row>strong small{display:block;margin-top:3px;color:#879386;font:9px "DM Sans",sans-serif}
+.entry-actions,.history-row>div:last-child{display:flex;gap:5px;grid-column:1/-1;justify-content:flex-end}
+.history-row{grid-template-columns:1fr auto}.history-row>div:last-child{grid-column:auto}
+@media(max-width:700px){.topbar{height:auto;min-height:72px;flex-wrap:wrap;padding:13px 0;gap:10px}.table-status{order:3;width:100%}.top-actions{margin-left:auto;flex-wrap:wrap;justify-content:flex-end}.ledger-actions{gap:5px}.ledger-actions .reset-button{padding:8px;font-size:10px}.ledger-actions .add-player{padding:8px;font-size:10px}.actions{flex-wrap:wrap;gap:4px}.actions .action-btn{font-size:9px}.settlement{padding:16px}.generic-dialog{padding:19px}}
