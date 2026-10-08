@@ -201,6 +201,7 @@
     $('sessionSetupDialog').close(); save(); render(); showToast(`New game started with ${count} players.`);
   });
   $('playerForm').addEventListener('submit', (event) => {
+    if (event.submitter?.value === 'cancel') { event.preventDefault(); $('playerDialog').close(); return; }
     event.preventDefault();
     const name = $('playerName').value.trim();
     const buyin = Number($('startAmount').value || 0);
@@ -308,17 +309,25 @@
       else { await navigator.clipboard.writeText(text); showToast('Session summary copied.'); }
     } catch (error) { if (error.name !== 'AbortError') showToast('Sharing is unavailable in this browser.'); }
   });
-  $('openHistory').addEventListener('click', () => {
+  function renderHistory() {
     const target = $('historyList');
     target.innerHTML = history.length ? [...history].reverse().map((session, reverseIndex) => {
       const index = history.length - 1 - reverseIndex;
       const inTotal = session.players.reduce((sum, p) => sum + p.buyins, 0);
-      return `<div class="history-row"><div><strong>${safe(session.name || 'Poker game')}</strong><span>${safe(session.date || '')} · ${session.players.length} players · ${currency.format(inTotal)} chips bought in</span></div><div><button class="action-btn" data-history-view="${index}">View</button><button class="action-btn" data-history-export="${index}">CSV</button></div></div>`;
+      return `<div class="history-row"><div><strong>${safe(session.name || 'Poker game')}</strong><span>${safe(session.date || '')} · ${session.players.length} players · ${currency.format(inTotal)} chips bought in</span></div><div><button class="action-btn" data-history-view="${index}">View</button><button class="action-btn" data-history-export="${index}">CSV</button><button class="action-btn danger-action" data-history-delete="${index}">Delete</button></div></div>`;
     }).join('') : '<p class="leaderboard-empty">Completed sessions will appear here when you start a new game.</p>';
+  }
+  $('openHistory').addEventListener('click', () => {
+    renderHistory();
     $('historyDialog').showModal();
   });
   $('historyList').addEventListener('click', (event) => {
-    const view = event.target.closest('[data-history-view]'), csv = event.target.closest('[data-history-export]');
+    const view = event.target.closest('[data-history-view]'), csv = event.target.closest('[data-history-export]'), remove = event.target.closest('[data-history-delete]');
+    if (remove) {
+      const index = Number(remove.dataset.historyDelete), session = history[index];
+      if (!session || !confirm(`Delete the saved game “${session.name || 'Poker game'}”? This cannot be undone.`)) return;
+      history.splice(index, 1); save(); renderHistory(); renderLeaderboard(); showToast('Past game deleted.'); return;
+    }
     if (csv) { exportCsv(history[Number(csv.dataset.historyExport)]); return; }
     if (view) {
       const session = history[Number(view.dataset.historyView)]; if (!session) return;

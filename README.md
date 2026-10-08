@@ -24,4 +24,4 @@ Open `http://127.0.0.1:8000` in your browser. The ledger saves to local storage 
 
 The default chip rate is ₹20 for 1,000 chips. Use **Settings** to change the cash-to-chip rate, starting stack, rebuy limit, and chip denominations for a session. Chip amounts are converted to their rupee value automatically. For transactions, enter a chip value total or a count expression such as `10x5 + 2x25`.
 
-The app also includes a net-chip leaderboard, settle-up suggestions (only when cash-outs balance buy-ins), player notes, editable and undoable transaction entries, past session history, CSV export, and a shareable session summary. Starting a new session archives the current one. Everything stays in the current browser's local storage.
+The app also includes a net-chip leaderboard, settle-up suggestions (only when cash-outs balance buy-ins), player notes, editable and undoable transaction entries, past session history with deletion, CSV export, and a shareable session summary. Starting a new session archives the current one. Everything stays in the current browser's local storage.

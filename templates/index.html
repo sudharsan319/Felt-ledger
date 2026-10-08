@@ -79,13 +79,13 @@
   </dialog>
   <dialog id="playerDialog">
     <form id="playerForm" method="dialog">
-      <div class="dialog-top"><div><p class="eyebrow">AT THE TABLE</p><h2 id="dialogTitle">Add a player</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div>
+      <div class="dialog-top"><div><p class="eyebrow">AT THE TABLE</p><h2 id="dialogTitle">Add a player</h2></div><button class="icon-button" value="cancel" formnovalidate aria-label="Close">×</button></div>
       <label class="field-label" for="playerName">PLAYER NAME</label>
       <input class="text-input" id="playerName" name="name" placeholder="e.g. Alex" maxlength="32" autocomplete="off" required />
       <label class="field-label" for="startAmount">STARTING BUY-IN <span>(chips, optional)</span></label>
       <div class="amount-input"><span>●</span><input id="startAmount" inputmode="numeric" type="number" min="0" step="1" placeholder="0" /></div>
       <p class="field-help">Default stack from Settings: <span id="startingStackHelp"></span></p>
-      <div class="dialog-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="confirm-button" id="savePlayer" value="default">Add player</button></div>
+      <div class="dialog-actions"><button class="cancel-button" value="cancel" formnovalidate>Cancel</button><button class="confirm-button" id="savePlayer" value="default">Add player</button></div>
     </form>
   </dialog>
   <dialog id="settingsDialog">
