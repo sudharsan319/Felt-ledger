@@ -6,6 +6,7 @@
   let history = [];
   let data = load();
   let toastTimer;
+  let leaderboardMode = 'current';
 
   function freshSession() { return { name: 'Friday night game', date: dateLabel, cashRate: 20, chipRate: 1000, startingStack: 1000, rebuyLimit: 0, denominations: [1, 5, 25, 100], players: [] }; }
   function load() {
@@ -113,17 +114,45 @@
   }
   function renderLeaderboard() {
     const target = $('leaderboardRows');
-    if (!data.players.length) {
-      target.innerHTML = '<p class="leaderboard-empty">Add players to see the standings for this session.</p>';
+    const allTime = leaderboardMode === 'all';
+    const entries = allTime ? buildAllTimeLeaderboard() : data.players.map((player) => ({ name: player.name, score: net(player), cash: chipCash(Math.abs(net(player))), games: 1 }));
+    $('leaderboardNote').textContent = allTime ? 'Ranked by lifetime net cash' : 'Ranked by net chips';
+    if (!entries.length) {
+      target.innerHTML = allTime ? '<p class="leaderboard-empty">Finish a game to start building your all-time standings.</p>' : '<p class="leaderboard-empty">Add players to see the standings for this session.</p>';
       return;
     }
-    const ranked = [...data.players].sort((a, b) => net(b) - net(a) || a.name.localeCompare(b.name));
+    const ranked = [...entries].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
     target.innerHTML = ranked.map((player, index) => {
-      const score = net(player), tone = score > 0 ? 'positive' : score < 0 ? 'negative' : 'even';
+      const score = player.score, tone = score > 0 ? 'positive' : score < 0 ? 'negative' : 'even';
       const rank = index === 0 ? '♛' : String(index + 1).padStart(2, '0');
-      return `<div class="leader-row"><span class="leader-rank ${index === 0 ? 'first' : ''}">${rank}</span><span class="leader-avatar">${safe(player.name.trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase())}</span><span class="leader-name">${safe(player.name)}</span><span class="leader-score ${tone}">${score > 0 ? '+' : score < 0 ? '−' : ''}${currency.format(Math.abs(score))}<small>${money(chipCash(Math.abs(score)))}</small></span></div>`;
+      const sign = score > 0 ? '+' : score < 0 ? '−' : '';
+      const mainScore = allTime ? `${sign}${money(Math.abs(score))}` : `${sign}${currency.format(Math.abs(score))}`;
+      const subScore = allTime ? `${player.games} game${player.games === 1 ? '' : 's'}` : money(Math.abs(player.cash));
+      return `<div class="leader-row"><span class="leader-rank ${index === 0 ? 'first' : ''}">${rank}</span><span class="leader-avatar">${safe(player.name.trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase())}</span><span class="leader-name">${safe(player.name)}</span><span class="leader-score ${tone}">${mainScore}<small>${subScore}</small></span></div>`;
     }).join('');
   }
+  function buildAllTimeLeaderboard() {
+    const players = new Map();
+    [...history, data].forEach((session) => {
+      session.players.forEach((player) => {
+        const key = player.name.trim().toLocaleLowerCase();
+        if (!players.has(key)) players.set(key, { name: player.name.trim(), score: 0, games: 0 });
+        const standing = players.get(key);
+        standing.score += net(player) * Number(session.cashRate || 20) / Number(session.chipRate || 1000);
+        standing.games += 1;
+      });
+    });
+    return [...players.values()];
+  }
+  document.querySelectorAll('[data-period]').forEach((button) => button.addEventListener('click', () => {
+    leaderboardMode = button.dataset.period;
+    document.querySelectorAll('[data-period]').forEach((option) => {
+      const active = option === button;
+      option.classList.toggle('active', active);
+      option.setAttribute('aria-pressed', String(active));
+    });
+    renderLeaderboard();
+  }));
   function openAdd() {
     if (data.ended) return showToast('Start a new session to add players.');
     $('playerForm').reset(); $('startAmount').value = data.startingStack || ''; $('dialogTitle').textContent = 'Add a player'; $('savePlayer').textContent = 'Add player';
