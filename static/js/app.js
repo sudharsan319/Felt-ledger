@@ -8,22 +8,26 @@
   let toastTimer;
   let leaderboardMode = 'current';
 
-  function freshSession() { return { name: 'Friday night game', date: dateLabel, cashRate: 20, chipRate: 1000, startingStack: 1000, rebuyLimit: 0, denominations: [1, 5, 25, 100], players: [] }; }
+  function freshSession() { return { name: '', date: dateLabel, cashRate: 20, chipRate: 1000, startingStack: 1000, rebuyLimit: 0, denominations: [1, 5, 25, 100], players: [] }; }
+  function clearSampleTitle(session) { if (session && session.name === 'Friday night game') session.name = ''; }
   function load() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (saved && saved.current && Array.isArray(saved.current.players)) {
         history = Array.isArray(saved.history) ? saved.history : [];
+        history.forEach(clearSampleTitle);
         return upgrade(saved.current);
       }
       if (saved && Array.isArray(saved.players)) {
         history = Array.isArray(saved.history) ? saved.history : [];
+        history.forEach(clearSampleTitle);
         return upgrade(saved);
       }
     } catch (_) { /* Start fresh if saved data is unavailable. */ }
     return freshSession();
   }
   function upgrade(saved) {
+        clearSampleTitle(saved);
         if (!saved.cashRate || !saved.chipRate) {
           // Older versions stored player amounts in rupees. Convert those saved values to chips.
           saved.cashRate = 20; saved.chipRate = 1000;
@@ -74,7 +78,6 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
   }
   function render() {
-    $('sessionName').value = data.name || '';
     $('cashRate').value = data.cashRate || 20;
     $('chipRate').value = data.chipRate || 1000;
     $('startingStack').value = data.startingStack ?? 1000;
@@ -290,7 +293,7 @@
 
   function sessionSummary(session) {
     const players = [...session.players].sort((a, b) => net(b) - net(a));
-    return `${session.name} · ${session.date}\n` + players.map((p) => `${p.name}: ${net(p) >= 0 ? '+' : ''}${currency.format(net(p))} chips (${chipCashFor(session, Math.abs(net(p)))})`).join('\n');
+    return `${session.name || 'Poker session'} · ${session.date}\n` + players.map((p) => `${p.name}: ${net(p) >= 0 ? '+' : ''}${currency.format(net(p))} chips (${chipCashFor(session, Math.abs(net(p)))})`).join('\n');
   }
   function chipCashFor(session, amount) { return '₹' + currency.format(amount * Number(session.cashRate || 20) / Number(session.chipRate || 1000)); }
   function exportCsv(session = data) {
@@ -335,7 +338,6 @@
       alert(`${session.name} · ${session.date}\n\n${standings || 'No players recorded.'}`);
     }
   });
-  $('sessionName').addEventListener('input', (event) => { data.name = event.target.value; save(); });
   $('openSettings').addEventListener('click', () => {
     $('cashRate').value = data.cashRate || 20; $('chipRate').value = data.chipRate || 1000;
     $('startingStack').value = data.startingStack || 0; $('rebuyLimit').value = data.rebuyLimit || 0;
