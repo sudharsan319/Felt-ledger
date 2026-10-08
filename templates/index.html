@@ -50,14 +50,14 @@
     <section class="ledger" aria-labelledby="ledgerTitle">
       <div class="ledger-head">
         <div><p class="eyebrow">THE LEDGER</p><h2 id="ledgerTitle">Players <span id="rowCount">(0)</span></h2></div>
-        <div class="ledger-actions"><button class="reset-button" id="shareSession" type="button">Share</button><button class="reset-button" id="settleButton" type="button">Settle up</button><button class="add-player" id="openAdd" type="button"><span>＋</span> Add player</button></div>
+        <div class="ledger-actions"><button class="reset-button" id="shareSession" type="button">Share</button><button class="reset-button" id="settleButton" type="button">Settle up</button><button class="add-player" id="openAdd" type="button"><span>＋</span> New player</button></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>PLAYER</th><th>BUY-INS</th><th>CASHED OUT</th><th>NET</th><th>STATUS</th><th><span class="sr-only">Actions</span></th></tr></thead>
           <tbody id="playerRows"></tbody>
         </table>
-        <div class="empty-state" id="emptyState"><div class="empty-chips">♠ &nbsp;● &nbsp;♣</div><strong>Waiting for the first player</strong><p>Add someone to the table to start the ledger.</p><button class="add-player" id="emptyAdd" type="button">＋ Add first player</button></div>
+        <div class="empty-state" id="emptyState"><div class="empty-chips">♠ &nbsp;● &nbsp;♣</div><strong>Waiting for the first player</strong><p>Add someone to the table to start the ledger.</p><button class="add-player" id="emptyAdd" type="button">＋ New player</button></div>
       </div>
       <div class="ledger-foot"><span><span class="live-dot"></span> Saved on this device</span><span>Amounts are in chips · converted at the rate above</span></div>
     </section>
@@ -65,6 +65,18 @@
     <footer><span>♠ &nbsp;A little less counting. A little more playing.</span><span>FELT SESSION LEDGER</span></footer>
   </main>
 
+  <dialog id="sessionSetupDialog">
+    <form id="sessionSetupForm" method="dialog">
+      <div class="dialog-top"><div><p class="eyebrow">DEALER SETUP</p><h2>Start a new game</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div>
+      <label class="field-label" for="setupPlayerCount">HOW MANY PLAYERS?</label>
+      <div class="amount-input"><span>♙</span><input id="setupPlayerCount" type="number" inputmode="numeric" min="2" max="12" step="1" value="4" required /></div>
+      <div class="field-label player-names-label">PLAYER NAMES</div>
+      <div id="setupPlayerNames" class="setup-player-names"></div>
+      <p class="settings-example" id="setupStackNote">Everyone starts with 1,000 chips.</p>
+      <p class="field-help">New players joining later can be added from the ledger with the same starting stack.</p>
+      <div class="dialog-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="confirm-button" id="startSession" value="default">Start game</button></div>
+    </form>
+  </dialog>
   <dialog id="playerDialog">
     <form id="playerForm" method="dialog">
       <div class="dialog-top"><div><p class="eyebrow">AT THE TABLE</p><h2 id="dialogTitle">Add a player</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div>

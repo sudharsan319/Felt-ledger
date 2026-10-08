@@ -160,6 +160,46 @@
   }
   $('openAdd').addEventListener('click', openAdd);
   $('emptyAdd').addEventListener('click', openAdd);
+  function refreshSetupNames(count, previous = []) {
+    const container = $('setupPlayerNames');
+    container.innerHTML = Array.from({ length: count }, (_, index) => {
+      const value = previous[index] || `Player ${index + 1}`;
+      return `<input class="text-input setup-player-name" maxlength="32" aria-label="Player ${index + 1} name" value="${safe(value)}" required />`;
+    }).join('');
+  }
+  $('setupPlayerCount').addEventListener('input', () => {
+    const previous = [...document.querySelectorAll('.setup-player-name')].map((input) => input.value);
+    const count = Number($('setupPlayerCount').value);
+    if (Number.isInteger(count) && count >= 2 && count <= 12) refreshSetupNames(count, previous);
+  });
+  $('newSession').addEventListener('click', () => {
+    $('setupPlayerCount').value = 4;
+    refreshSetupNames(4);
+    $('setupStackNote').textContent = data.startingStack > 0
+      ? `Everyone starts with ${currency.format(data.startingStack)} chips (${money(chipCash(data.startingStack))}).`
+      : 'Starting stack is set to 0 in Settings.';
+    $('sessionSetupDialog').showModal();
+  });
+  $('sessionSetupForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const count = Number($('setupPlayerCount').value);
+    const names = [...document.querySelectorAll('.setup-player-name')].map((input) => input.value.trim());
+    if (!Number.isInteger(count) || count < 2 || count > 12 || names.length !== count) return showToast('Choose between 2 and 12 players.');
+    if (names.some((name) => !name)) return showToast('Enter a name for each player.');
+    if (new Set(names.map((name) => name.toLocaleLowerCase())).size !== names.length) return showToast('Each player needs a unique name.');
+    const hasActivity = data.players.some((p) => p.buyins || p.cashouts);
+    if (hasActivity && !confirm('Save the current game to Past games and start this new one?')) return;
+    if (hasActivity) history.push(JSON.parse(JSON.stringify(data)));
+    const settings = { cashRate: data.cashRate, chipRate: data.chipRate, startingStack: data.startingStack, rebuyLimit: data.rebuyLimit, denominations: data.denominations };
+    data = { ...freshSession(), ...settings };
+    data.players = names.map((name) => {
+      const player = { name, buyins: 0, cashouts: 0, buyinCount: 0, rebuys: 0, note: '', transactions: [] };
+      if (data.startingStack > 0) player.transactions.push({ id: Date.now() + Math.random(), type: 'buyin', amount: data.startingStack, time: Date.now() });
+      syncPlayer(player);
+      return player;
+    });
+    $('sessionSetupDialog').close(); save(); render(); showToast(`New game started with ${count} players.`);
+  });
   $('playerForm').addEventListener('submit', (event) => {
     event.preventDefault();
     const name = $('playerName').value.trim();
@@ -308,14 +348,6 @@
     if (!denominations.length) return showToast('Enter at least one valid chip denomination.');
     data.cashRate = cash; data.chipRate = chip; data.startingStack = stack; data.rebuyLimit = rebuy; data.denominations = [...new Set(denominations)].sort((a, b) => a - b);
     save(); $('settingsDialog').close(); render(); showToast('Session settings updated.');
-  });
-  $('newSession').addEventListener('click', () => {
-    const hasActivity = data.players.some((p) => p.buyins || p.cashouts);
-    if (hasActivity && !confirm('Finish and save this game to Past games, then start a new session?')) return;
-    if (hasActivity) history.push(JSON.parse(JSON.stringify(data)));
-    const previousSettings = { cashRate: data.cashRate, chipRate: data.chipRate, startingStack: data.startingStack, rebuyLimit: data.rebuyLimit, denominations: data.denominations };
-    data = { ...freshSession(), ...previousSettings };
-    save(); render(); showToast(hasActivity ? 'Game saved to Past games.' : 'A fresh session is ready.');
   });
   $('sessionDate').textContent = data.date || dateLabel;
   render();
